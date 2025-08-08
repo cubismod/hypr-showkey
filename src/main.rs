@@ -21,17 +21,17 @@ struct Cli {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    
+
     // Load configuration
     let config = Config::load(cli.config)?;
-    
+
     // Parse Hyprland configuration files
     let parser = HyprlandParser::new(&config);
     let keybindings = parser.parse()?;
-    
+
     // Start TUI
     let mut app = App::new(keybindings, &config);
     app.run()?;
-    
+
     Ok(())
 }

@@ -135,11 +135,14 @@ impl ThemeSettings {
             "catppuccin_macchiato" | "macchiato" => ThemeColors::catppuccin_macchiato(),
             "catppuccin_frappe" | "frappe" => ThemeColors::catppuccin_frappe(),
             _ => {
-                eprintln!("Warning: Unknown theme '{}', falling back to catppuccin_mocha", name);
+                eprintln!(
+                    "Warning: Unknown theme '{}', falling back to catppuccin_mocha",
+                    name
+                );
                 ThemeColors::catppuccin_mocha()
             }
         };
-        
+
         Self {
             name: name.to_string(),
             colors,
@@ -172,15 +175,15 @@ impl ThemeColors {
             selected_fg: "#cdd6f4".to_string(),
             search_bg: "#1e1e2e".to_string(),
             search_fg: "#cdd6f4".to_string(),
-            key_color: "#89b4fa".to_string(),        // Blue
-            action_color: "#cdd6f4".to_string(),     // Text
-            category_color: "#a6e3a1".to_string(),   // Green
+            key_color: "#89b4fa".to_string(),         // Blue
+            action_color: "#cdd6f4".to_string(),      // Text
+            category_color: "#a6e3a1".to_string(),    // Green
             description_color: "#bac2de".to_string(), // Subtext1
-            matched_color: "#f9e2af".to_string(),    // Yellow
-            border_color: "#585b70".to_string(),     // Surface2
+            matched_color: "#f9e2af".to_string(),     // Yellow
+            border_color: "#585b70".to_string(),      // Surface2
         }
     }
-    
+
     pub fn catppuccin_latte() -> Self {
         Self {
             background: "#eff1f5".to_string(),
@@ -189,15 +192,15 @@ impl ThemeColors {
             selected_fg: "#4c4f69".to_string(),
             search_bg: "#eff1f5".to_string(),
             search_fg: "#4c4f69".to_string(),
-            key_color: "#1e66f5".to_string(),        // Blue
-            action_color: "#4c4f69".to_string(),     // Text
-            category_color: "#40a02b".to_string(),   // Green
+            key_color: "#1e66f5".to_string(),         // Blue
+            action_color: "#4c4f69".to_string(),      // Text
+            category_color: "#40a02b".to_string(),    // Green
             description_color: "#6c6f85".to_string(), // Subtext1
-            matched_color: "#df8e1d".to_string(),    // Yellow
-            border_color: "#9ca0b0".to_string(),     // Surface2
+            matched_color: "#df8e1d".to_string(),     // Yellow
+            border_color: "#9ca0b0".to_string(),      // Surface2
         }
     }
-    
+
     pub fn catppuccin_macchiato() -> Self {
         Self {
             background: "#24273a".to_string(),
@@ -206,15 +209,15 @@ impl ThemeColors {
             selected_fg: "#cad3f5".to_string(),
             search_bg: "#24273a".to_string(),
             search_fg: "#cad3f5".to_string(),
-            key_color: "#8aadf4".to_string(),        // Blue
-            action_color: "#cad3f5".to_string(),     // Text
-            category_color: "#a6da95".to_string(),   // Green
+            key_color: "#8aadf4".to_string(),         // Blue
+            action_color: "#cad3f5".to_string(),      // Text
+            category_color: "#a6da95".to_string(),    // Green
             description_color: "#b8c0e0".to_string(), // Subtext1
-            matched_color: "#eed49f".to_string(),    // Yellow
-            border_color: "#5b6078".to_string(),     // Surface2
+            matched_color: "#eed49f".to_string(),     // Yellow
+            border_color: "#5b6078".to_string(),      // Surface2
         }
     }
-    
+
     pub fn catppuccin_frappe() -> Self {
         Self {
             background: "#303446".to_string(),
@@ -223,12 +226,12 @@ impl ThemeColors {
             selected_fg: "#c6d0f5".to_string(),
             search_bg: "#303446".to_string(),
             search_fg: "#c6d0f5".to_string(),
-            key_color: "#8caaee".to_string(),        // Blue
-            action_color: "#c6d0f5".to_string(),     // Text
-            category_color: "#a6d189".to_string(),   // Green
+            key_color: "#8caaee".to_string(),         // Blue
+            action_color: "#c6d0f5".to_string(),      // Text
+            category_color: "#a6d189".to_string(),    // Green
             description_color: "#b5bfe2".to_string(), // Subtext1
-            matched_color: "#e5c890".to_string(),    // Yellow
-            border_color: "#626880".to_string(),     // Surface2
+            matched_color: "#e5c890".to_string(),     // Yellow
+            border_color: "#626880".to_string(),      // Surface2
         }
     }
 }
@@ -251,10 +254,9 @@ impl Config {
             path
         } else {
             // Try default locations
-            let mut default_path = dirs::config_dir()
-                .context("Could not find config directory")?;
+            let mut default_path = dirs::config_dir().context("Could not find config directory")?;
             default_path.push("hypr-showkey/showkey.yaml");
-            
+
             if !default_path.exists() {
                 // Also check current directory
                 let current_dir_config = PathBuf::from("showkey.yaml");
@@ -272,19 +274,19 @@ impl Config {
 
         let content = std::fs::read_to_string(&config_file)
             .with_context(|| format!("Failed to read config file: {:?}", config_file))?;
-        
+
         let config: Config = serde_yaml::from_str(&content)
             .with_context(|| format!("Failed to parse config file: {:?}", config_file))?;
-        
+
         Ok(config)
     }
-    
+
     pub fn resolve_hyprland_paths(&self) -> Result<Vec<PathBuf>> {
         let mut resolved_paths = Vec::new();
         let hypr_config_dir = dirs::config_dir()
             .context("Could not find config directory")?
             .join("hypr");
-        
+
         for file_path in &self.hyprland_configs.files {
             let path = if file_path.starts_with('/') {
                 // Absolute path
@@ -293,18 +295,18 @@ impl Config {
                 // Relative to ~/.config/hypr/
                 hypr_config_dir.join(file_path)
             };
-            
+
             if path.exists() {
                 resolved_paths.push(path);
             } else {
                 eprintln!("Warning: Hyprland config file not found: {:?}", path);
             }
         }
-        
+
         if resolved_paths.is_empty() {
             return Err(anyhow::anyhow!("No valid Hyprland config files found"));
         }
-        
+
         Ok(resolved_paths)
     }
 }
