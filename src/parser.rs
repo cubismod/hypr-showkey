@@ -87,8 +87,8 @@ impl<'a> HyprlandParser<'a> {
 
         // Handle the = sign properly
         let bind_content = after_bind.trim();
-        let bind_content = if bind_content.starts_with('=') {
-            bind_content[1..].trim()
+        let bind_content = if let Some(stripped) = bind_content.strip_prefix('=') {
+            stripped.trim()
         } else {
             bind_content
         };
@@ -156,9 +156,9 @@ impl<'a> HyprlandParser<'a> {
         let mut current = String::new();
         let mut in_quotes = false;
         let mut paren_depth = 0;
-        let mut chars = content.chars().peekable();
+        let chars = content.chars();
 
-        while let Some(ch) = chars.next() {
+        for ch in chars {
             match ch {
                 '"' => {
                     in_quotes = !in_quotes;
@@ -248,7 +248,7 @@ impl<'a> HyprlandParser<'a> {
     fn determine_category(&self, action: &str, params: &str, description: &str) -> String {
         let search_text = format!("{} {} {}", action, params, description).to_lowercase();
 
-        for (_category_id, category) in &self.config.categories {
+        for category in self.config.categories.values() {
             for keyword in &category.keywords {
                 if search_text.contains(&keyword.to_lowercase()) {
                     return category.name.clone();

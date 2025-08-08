@@ -108,7 +108,7 @@ impl<'de> Deserialize<'de> for ThemeSettings {
                 }
 
                 let name = name.unwrap_or_else(|| "catppuccin_mocha".to_string());
-                let colors = colors.unwrap_or_else(|| ThemeColors::catppuccin_mocha());
+                let colors = colors.unwrap_or_else(ThemeColors::catppuccin_mocha);
 
                 Ok(ThemeSettings { name, colors })
             }

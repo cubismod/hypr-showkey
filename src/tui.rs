@@ -61,7 +61,7 @@ impl App {
         for (index, keybinding) in self.keybindings.iter().enumerate() {
             self.categories
                 .entry(keybinding.category.clone())
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push(index);
         }
     }
@@ -168,12 +168,7 @@ impl App {
                 .enumerate()
                 .filter_map(|(i, kb)| {
                     let search_text = format!("{} {} {}", kb.key, kb.action, kb.description);
-                    if let Some(score) = self.matcher.fuzzy_match(&search_text, &self.search_query)
-                    {
-                        Some((i, kb.clone(), score))
-                    } else {
-                        None
-                    }
+                    self.matcher.fuzzy_match(&search_text, &self.search_query).map(|score| (i, kb.clone(), score))
                 })
                 .collect();
 
@@ -207,7 +202,7 @@ impl App {
         if self.columns == 0 {
             return 0;
         }
-        (self.filtered_keybindings.len() + self.columns - 1) / self.columns
+        self.filtered_keybindings.len().div_ceil(self.columns)
     }
 
     fn get_current_column(&self) -> usize {
