@@ -57,24 +57,12 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             binary-suffix: ""
-            asset-name: "hypr-showkey-linux-x86_64"
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             binary-suffix: ""
-            asset-name: "hypr-showkey-linux-x86_64-musl"
-          - os: macos-latest
-            target: x86_64-apple-darwin
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
             binary-suffix: ""
-            asset-name: "hypr-showkey-macos-x86_64"
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            binary-suffix: ""
-            asset-name: "hypr-showkey-macos-aarch64"
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            binary-suffix: ".exe"
-            asset-name: "hypr-showkey-windows-x86_64.exe"
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -101,7 +89,6 @@ jobs:
       run: cargo build --release --target ${{ matrix.target }}
 
     - name: Strip binary (Unix only)
-      if: matrix.os != 'windows-latest'
       run: strip target/${{ matrix.target }}/release/hypr-showkey${{ matrix.binary-suffix }}
 
     - name: Create release package
@@ -113,19 +100,10 @@ jobs:
         cp showkey.yaml release-package/showkey.example.yaml
 
     - name: Create tarball (Unix)
-      if: matrix.os != 'windows-latest'
       run: |
         cd release-package
         tar -czf ../${{ matrix.asset-name }}.tar.gz *
-
-    - name: Create zip (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        cd release-package
-        7z a ../${{ matrix.asset-name }}.zip *
-
     - name: Upload Release Asset (Unix)
-      if: matrix.os != 'windows-latest'
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,14 +112,3 @@ jobs:
         asset_path: ./${{ matrix.asset-name }}.tar.gz
         asset_name: ${{ matrix.asset-name }}.tar.gz
         asset_content_type: application/gzip
-
-    - name: Upload Release Asset (Windows)
-      if: matrix.os == 'windows-latest'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.create-release.outputs.upload_url }}
-        asset_path: ./${{ matrix.asset-name }}.zip
-        asset_name: ${{ matrix.asset-name }}.zip
-        asset_content_type: application/zip
