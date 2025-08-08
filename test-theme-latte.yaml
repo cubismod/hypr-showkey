@@ -1,0 +1,7 @@
+hyprland_configs:
+  files:
+    - "conf/keybindings/default.conf"
+
+ui:
+  theme: "latte"  # Test short name for light theme
+  show_descriptions: true

@@ -134,11 +134,30 @@ task setup-config      # Copy example config
 Hypr-showkey comes with built-in Catppuccin themes:
 
 - `catppuccin_mocha` (default, dark)
-- `catppuccin_latte` (light)
+- `catppuccin_latte` (light)  
 - `catppuccin_macchiato` (dark)
 - `catppuccin_frappe` (dark)
 
-You can also define custom colors using hex values in your config file.
+### Using Preset Themes
+
+```yaml
+ui:
+  theme: "catppuccin_latte"  # Use the light theme
+  # Or use short names: "mocha", "latte", "macchiato", "frappe"
+```
+
+### Custom Colors
+
+You can override specific colors while keeping a base theme:
+
+```yaml
+ui:
+  theme:
+    name: "catppuccin_mocha"
+    colors:
+      key_color: "#ff0000"      # Custom red for keys
+      border_color: "#00ff00"   # Custom green for borders
+```
 
 ## Configuration File Paths
 

@@ -50,10 +50,72 @@ impl Default for UiSettings {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ThemeSettings {
     pub name: String,
     pub colors: ThemeColors,
+}
+
+impl<'de> Deserialize<'de> for ThemeSettings {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::{self, MapAccess, Visitor};
+
+        struct ThemeVisitor;
+
+        impl<'de> Visitor<'de> for ThemeVisitor {
+            type Value = ThemeSettings;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a theme name string or theme object")
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<ThemeSettings, E>
+            where
+                E: de::Error,
+            {
+                Ok(ThemeSettings::from_name(value))
+            }
+
+            fn visit_map<M>(self, mut map: M) -> Result<ThemeSettings, M::Error>
+            where
+                M: MapAccess<'de>,
+            {
+                let mut name: Option<String> = None;
+                let mut colors: Option<ThemeColors> = None;
+
+                while let Some(key) = map.next_key::<String>()? {
+                    match key.as_str() {
+                        "name" => {
+                            let theme_name: String = map.next_value()?;
+                            name = Some(theme_name.clone());
+                            // If only name is provided, use preset theme
+                            if colors.is_none() {
+                                let preset_theme = ThemeSettings::from_name(&theme_name);
+                                colors = Some(preset_theme.colors);
+                            }
+                        }
+                        "colors" => {
+                            colors = Some(map.next_value()?);
+                        }
+                        _ => {
+                            // Ignore unknown fields
+                            let _: serde_yaml::Value = map.next_value()?;
+                        }
+                    }
+                }
+
+                let name = name.unwrap_or_else(|| "catppuccin_mocha".to_string());
+                let colors = colors.unwrap_or_else(|| ThemeColors::catppuccin_mocha());
+
+                Ok(ThemeSettings { name, colors })
+            }
+        }
+
+        deserializer.deserialize_any(ThemeVisitor)
+    }
 }
 
 impl Default for ThemeSettings {
@@ -61,6 +123,26 @@ impl Default for ThemeSettings {
         Self {
             name: "catppuccin_mocha".to_string(),
             colors: ThemeColors::catppuccin_mocha(),
+        }
+    }
+}
+
+impl ThemeSettings {
+    pub fn from_name(name: &str) -> Self {
+        let colors = match name.to_lowercase().as_str() {
+            "catppuccin_mocha" | "mocha" => ThemeColors::catppuccin_mocha(),
+            "catppuccin_latte" | "latte" => ThemeColors::catppuccin_latte(),
+            "catppuccin_macchiato" | "macchiato" => ThemeColors::catppuccin_macchiato(),
+            "catppuccin_frappe" | "frappe" => ThemeColors::catppuccin_frappe(),
+            _ => {
+                eprintln!("Warning: Unknown theme '{}', falling back to catppuccin_mocha", name);
+                ThemeColors::catppuccin_mocha()
+            }
+        };
+        
+        Self {
+            name: name.to_string(),
+            colors,
         }
     }
 }

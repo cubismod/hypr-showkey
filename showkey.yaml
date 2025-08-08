@@ -63,19 +63,26 @@ ui:
   # Maximum number of results to display
   max_results: 50
   
-  # Theme settings
-  theme:
-    name: "catppuccin_mocha"
-    colors:
-      background: "#1e1e2e"
-      foreground: "#cdd6f4"
-      selected_bg: "#313244"
-      selected_fg: "#cdd6f4"
-      search_bg: "#1e1e2e"
-      search_fg: "#cdd6f4"
-      key_color: "#89b4fa"        # Blue
-      action_color: "#cdd6f4"     # Text
-      category_color: "#a6e3a1"   # Green
-      description_color: "#bac2de" # Subtext1
-      matched_color: "#f9e2af"    # Yellow
-      border_color: "#585b70"     # Surface2
+  # Theme settings - you can use a preset theme name or custom colors
+  # 
+  # Option 1: Use a preset theme name (recommended)
+  theme: "catppuccin_mocha"
+  # Available presets: catppuccin_mocha, catppuccin_latte, catppuccin_macchiato, catppuccin_frappe
+  # Short names also work: mocha, latte, macchiato, frappe
+  
+  # Option 2: Full theme configuration with custom colors
+  # theme:
+  #   name: "catppuccin_mocha"
+  #   colors:
+  #     background: "#1e1e2e"
+  #     foreground: "#cdd6f4"
+  #     selected_bg: "#313244"
+  #     selected_fg: "#cdd6f4"
+  #     search_bg: "#1e1e2e"
+  #     search_fg: "#cdd6f4"
+  #     key_color: "#89b4fa"        # Blue
+  #     action_color: "#cdd6f4"     # Text
+  #     category_color: "#a6e3a1"   # Green
+  #     description_color: "#bac2de" # Subtext1
+  #     matched_color: "#f9e2af"    # Yellow
+  #     border_color: "#585b70"     # Surface2

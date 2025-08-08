@@ -1,0 +1,11 @@
+hyprland_configs:
+  files:
+    - "conf/keybindings/default.conf"
+
+ui:
+  theme:
+    name: "catppuccin_macchiato"
+    colors:
+      key_color: "#ff6b9d"      # Custom pink for keys
+      border_color: "#c6a0f6"   # Custom purple for borders
+  show_descriptions: true
