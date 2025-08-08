@@ -2,33 +2,45 @@
 
 A fast, configurable TUI application for displaying and searching Hyprland keybindings with fuzzy search functionality.
 
+![Screenshot of the TUI](/2025-08-08-170853_hyprshot.png)
+
 ## Features
 
-- 🔍 **Fuzzy Search** - Quickly find keybindings by typing partial matches
-- 📊 **Responsive Columns** - Automatically adapts to terminal width (50+ chars per column)
-- 🎨 **Catppuccin Themes** - Beautiful color themes with full customization
-- 📁 **Configurable** - Parse any Hyprland config files you specify
-- 🏷️ **Categorization** - Automatically categorize keybindings by function
-- 🚫 **Smart Filtering** - Unbound keybindings are automatically filtered out
-- ⚡ **Fast** - Built in Rust for speed and reliability
-- 🎯 **Easy Navigation** - Vim-like keybindings for smooth navigation
+- **Fuzzy Search** - Quickly find keybindings by typing partial matches
+
+- **Responsive Columns** - Automatically adapts to terminal width (50+ chars per column)
+
+- **Catppuccin Themes** - Beautiful color themes with full customization
+
+- **Configurable** - Parse any Hyprland config files you specify
+
+- **Categorization** - Automatically categorize keybindings by function
+
+- **Smart Filtering** - Unbound keybindings are automatically filtered out
+
+- **Fast** - Built in Rust for speed and reliability
+
+- **Easy Navigation** - Vim-like keybindings for smooth navigation
 
 ## Installation
 
 ### Quick Setup with Task Runner
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd hypr-showkey
 ```
 
 2. Set up the development environment:
+
 ```bash
 task setup
 ```
 
 3. Install the application:
+
 ```bash
 task install          # Install to ~/.local/bin
 # OR
@@ -38,6 +50,7 @@ task install-global   # Install globally with cargo
 ### Manual Installation
 
 1. Clone and build:
+
 ```bash
 git clone <repository-url>
 cd hypr-showkey
@@ -45,13 +58,14 @@ cargo build --release
 ```
 
 2. Install manually:
+
 ```bash
 cp target/release/hypr-showkey ~/.local/bin/
 ```
 
 ## Configuration
 
-Create a configuration file at `~/.config/showkey.yaml`:
+Create a configuration file at `~/.config/hypr-showkey/showkey.yaml`:
 
 ```yaml
 # Hyprland configuration files to parse
