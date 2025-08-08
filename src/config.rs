@@ -171,7 +171,7 @@ impl Config {
             // Try default locations
             let mut default_path = dirs::config_dir()
                 .context("Could not find config directory")?;
-            default_path.push("showkey.yaml");
+            default_path.push("hypr-showkey/showkey.yaml");
             
             if !default_path.exists() {
                 // Also check current directory
@@ -180,7 +180,7 @@ impl Config {
                     current_dir_config
                 } else {
                     return Err(anyhow::anyhow!(
-                        "Configuration file not found. Please create ~/.config/showkey.yaml or provide a path with --config"
+                        "Configuration file not found. Please create ~/.config/hypr-showkey/showkey.yaml or provide a path with --config"
                     ));
                 }
             } else {
