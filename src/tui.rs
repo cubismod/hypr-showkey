@@ -168,7 +168,9 @@ impl App {
                 .enumerate()
                 .filter_map(|(i, kb)| {
                     let search_text = format!("{} {} {}", kb.key, kb.action, kb.description);
-                    self.matcher.fuzzy_match(&search_text, &self.search_query).map(|score| (i, kb.clone(), score))
+                    self.matcher
+                        .fuzzy_match(&search_text, &self.search_query)
+                        .map(|score| (i, kb.clone(), score))
                 })
                 .collect();
 
