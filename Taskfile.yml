@@ -1,0 +1,199 @@
+version: '3'
+
+vars:
+  APP_NAME: hypr-showkey
+  CARGO_TARGET_DIR: target
+  CONFIG_DIR: ~/.config
+  INSTALL_DIR: ~/.local/bin
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # Development tasks
+  dev:
+    desc: Run the application in development mode
+    cmds:
+      - cargo run
+
+  dev-config:
+    desc: Run with custom config file
+    cmds:
+      - cargo run -- --config {{.CLI_ARGS | default "showkey.yaml"}}
+
+  check:
+    desc: Check code for errors without building
+    cmds:
+      - cargo check
+
+  test:
+    desc: Run all tests
+    cmds:
+      - cargo test
+
+  lint:
+    desc: Run clippy linter
+    cmds:
+      - cargo clippy -- -D warnings
+
+  fmt:
+    desc: Format code with rustfmt
+    cmds:
+      - cargo fmt
+
+  fmt-check:
+    desc: Check if code is formatted correctly
+    cmds:
+      - cargo fmt -- --check
+
+  # Build tasks
+  build:
+    desc: Build the application in debug mode
+    cmds:
+      - cargo build
+
+  build-release:
+    desc: Build the application in release mode
+    cmds:
+      - cargo build --release
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - cargo clean
+
+  # Installation tasks
+  install:
+    desc: Install the application to ~/.local/bin
+    deps: [build-release]
+    cmds:
+      - mkdir -p {{.INSTALL_DIR}}
+      - cp {{.CARGO_TARGET_DIR}}/release/{{.APP_NAME}} {{.INSTALL_DIR}}/
+      - echo "{{.APP_NAME}} installed to {{.INSTALL_DIR}}"
+
+  install-global:
+    desc: Install the application globally using cargo
+    cmds:
+      - cargo install --path .
+
+  uninstall:
+    desc: Remove the application from ~/.local/bin
+    cmds:
+      - rm -f {{.INSTALL_DIR}}/{{.APP_NAME}}
+      - echo "{{.APP_NAME}} removed from {{.INSTALL_DIR}}"
+
+  # Configuration tasks
+  setup-config:
+    desc: Copy example config to ~/.config/showkey.yaml
+    cmds:
+      - mkdir -p {{.CONFIG_DIR}}
+      - cp showkey.yaml {{.CONFIG_DIR}}/showkey.yaml
+      - echo "Configuration copied to {{.CONFIG_DIR}}/showkey.yaml"
+
+  edit-config:
+    desc: Edit the configuration file
+    cmds:
+      - ${EDITOR:-vim} {{.CONFIG_DIR}}/showkey.yaml
+
+  show-config:
+    desc: Display the current configuration
+    cmds:
+      - cat {{.CONFIG_DIR}}/showkey.yaml
+
+  # Quality assurance tasks
+  qa:
+    desc: Run all quality assurance checks
+    deps: [fmt-check, lint, test, build-release]
+    cmds:
+      - echo "All QA checks passed!"
+
+  ci:
+    desc: Run continuous integration checks
+    deps: [fmt-check, lint, test, build]
+    cmds:
+      - echo "CI checks completed successfully!"
+
+  # Documentation tasks
+  docs:
+    desc: Generate and open documentation
+    cmds:
+      - cargo doc --open
+
+  readme:
+    desc: Display the README file
+    cmds:
+      - cat README.md
+
+  # Utility tasks
+  deps:
+    desc: Update dependencies
+    cmds:
+      - cargo update
+
+  tree:
+    desc: Show dependency tree
+    cmds:
+      - cargo tree
+
+  size:
+    desc: Show binary size (release build)
+    deps: [build-release]
+    cmds:
+      - ls -lh {{.CARGO_TARGET_DIR}}/release/{{.APP_NAME}}
+
+  run-example:
+    desc: Run with example config and sample data
+    cmds:
+      - cargo run -- --config showkey.yaml
+
+  # Development environment setup
+  setup:
+    desc: Set up development environment
+    cmds:
+      - task: deps
+      - task: build
+      - task: setup-config
+      - echo "Development environment set up successfully!"
+      - echo "Run 'task dev' to start the application"
+
+  # Release tasks
+  release-check:
+    desc: Perform pre-release checks
+    deps: [qa]
+    cmds:
+      - echo "Release checks completed. Ready for release!"
+
+  package:
+    desc: Create a release package
+    deps: [build-release]
+    cmds:
+      - mkdir -p dist
+      - cp {{.CARGO_TARGET_DIR}}/release/{{.APP_NAME}} dist/
+      - cp README.md dist/
+      - cp LICENSE dist/
+      - cp showkey.yaml dist/showkey.example.yaml
+      - echo "Release package created in dist/"
+
+  # Debugging tasks
+  debug:
+    desc: Run with debug output
+    cmds:
+      - RUST_BACKTRACE=1 cargo run
+
+  debug-config:
+    desc: Run with debug output and custom config
+    cmds:
+      - RUST_BACKTRACE=1 cargo run -- --config {{.CLI_ARGS | default "showkey.yaml"}}
+
+  # Performance tasks
+  bench:
+    desc: Run benchmarks (if any)
+    cmds:
+      - cargo bench
+
+  profile:
+    desc: Build with profiling enabled
+    cmds:
+      - cargo build --release --features profiling

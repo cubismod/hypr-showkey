@@ -1,0 +1,81 @@
+# Hypr-showkey configuration file
+# Place this file at ~/.config/showkey.yaml
+
+# Hyprland configuration files to parse for keybindings
+hyprland_configs:
+  # List of Hyprland config files to parse
+  # Supports both absolute paths and paths relative to ~/.config/hypr/
+  files:
+    - "conf/keybindings/default.conf"
+    - "conf/keybindings/custom.conf"
+    # - "/path/to/other/config.conf"  # Absolute path example
+
+# Category mappings - define how to categorize parsed keybindings
+# This is optional - if not specified, all keybindings will be in a single list
+categories:
+  applications:
+    name: "Applications"
+    description: "Launch applications and tools"
+    # Keywords to match in comments or action commands
+    keywords: ["terminal", "browser", "filemanager", "calculator", "rofi", "fuzzel", "launcher"]
+    
+  windows:
+    name: "Window Management"
+    description: "Control windows and their layout"
+    keywords: ["killactive", "fullscreen", "togglefloating", "togglesplit", "togglegroup", "swapsplit"]
+    
+  focus:
+    name: "Window Focus & Movement"
+    description: "Move focus and swap windows"
+    keywords: ["movefocus", "swapwindow", "cyclenext", "bringactivetotop"]
+    
+  resize:
+    name: "Window Resizing"
+    description: "Resize windows"
+    keywords: ["resizeactive", "movewindow", "resizewindow"]
+    
+  workspaces:
+    name: "Workspace Management"
+    description: "Switch and manage workspaces"
+    keywords: ["workspace", "movetoworkspace"]
+    
+  system:
+    name: "System Actions"
+    description: "System controls and utilities"
+    keywords: ["screenshot", "hyprctl", "wlogout", "hyprlock", "reload"]
+    
+  media:
+    name: "Media Controls"
+    description: "Audio, brightness and media controls"
+    keywords: ["XF86Audio", "XF86MonBrightness", "brightnessctl", "pactl", "playerctl"]
+
+# UI settings
+ui:
+  # Show category descriptions in the interface
+  show_descriptions: true
+  
+  # Fuzzy search sensitivity (0.0 to 1.0, lower = more fuzzy)
+  search_threshold: 0.6
+  
+  # Show the raw bind command alongside the description
+  show_raw_command: false
+  
+  # Maximum number of results to display
+  max_results: 50
+  
+  # Theme settings
+  theme:
+    name: "catppuccin_mocha"
+    colors:
+      background: "#1e1e2e"
+      foreground: "#cdd6f4"
+      selected_bg: "#313244"
+      selected_fg: "#cdd6f4"
+      search_bg: "#1e1e2e"
+      search_fg: "#cdd6f4"
+      key_color: "#89b4fa"        # Blue
+      action_color: "#cdd6f4"     # Text
+      category_color: "#a6e3a1"   # Green
+      description_color: "#bac2de" # Subtext1
+      matched_color: "#f9e2af"    # Yellow
+      border_color: "#585b70"     # Surface2
