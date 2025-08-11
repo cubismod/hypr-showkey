@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Ryan Wallace"]
 description = "A TUI application to display and search Hyprland keybindings"
 license = "Apache-2.0"
+repository = "https://github.com/cubismod/hypr-showkey"
 
 [dependencies]
 ratatui = "0.29"
@@ -16,3 +17,8 @@ dirs = "6.0"
 clap = { version = "4.4", features = ["derive"] }
 anyhow = "1.0"
 regex = "1.10"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
