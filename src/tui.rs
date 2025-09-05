@@ -336,7 +336,7 @@ impl App {
                 if self.config.ui.show_raw_command {
                     format!("Raw: {}", kb.raw_command)
                 } else {
-                    format!("Category: {} | Action: {}", kb.category, kb.action)
+                    format!("Action: {}", kb.action)
                 }
             } else {
                 "No selection".to_string()
@@ -368,10 +368,17 @@ impl App {
 
     fn render_single_column(&mut self, f: &mut Frame, area: Rect) {
         let theme = self.config.ui.theme.colors.clone();
+        let selected_idx = self.list_state.selected();
+        let available_width = area.width.saturating_sub(4); // Account for borders and padding
+
         let items: Vec<ListItem> = self
             .filtered_keybindings
             .iter()
-            .map(|(_, kb)| self.create_list_item(kb, &theme))
+            .enumerate()
+            .map(|(idx, (_, kb))| {
+                let is_selected = selected_idx == Some(idx);
+                self.create_list_item(kb, &theme, is_selected, available_width)
+            })
             .collect();
 
         let list_title = format!(
@@ -423,9 +430,17 @@ impl App {
             let end_idx = ((col_idx + 1) * items_per_column).min(filtered_len);
 
             if start_idx < filtered_len {
+                let selected_idx = self.list_state.selected();
+                let available_width = chunk.width.saturating_sub(4); // Account for borders and padding
+
                 let column_items: Vec<ListItem> = self.filtered_keybindings[start_idx..end_idx]
                     .iter()
-                    .map(|(_, kb)| self.create_list_item(kb, &theme))
+                    .enumerate()
+                    .map(|(relative_idx, (_, kb))| {
+                        let absolute_idx = start_idx + relative_idx;
+                        let is_selected = selected_idx == Some(absolute_idx);
+                        self.create_list_item(kb, &theme, is_selected, available_width)
+                    })
                     .collect();
 
                 let list_title = if col_idx == 0 {
@@ -470,34 +485,118 @@ impl App {
         &self,
         kb: &'a Keybinding,
         theme: &crate::config::ThemeColors,
+        is_selected: bool,
+        available_width: u16,
     ) -> ListItem<'a> {
         let key_style = Style::default()
             .fg(parse_hex_color(&theme.key_color))
             .add_modifier(Modifier::BOLD);
-        let category_style = Style::default().fg(parse_hex_color(&theme.category_color));
         let description_style = Style::default().fg(parse_hex_color(&theme.action_color));
 
         let content = if self.config.ui.show_descriptions && !kb.description.is_empty() {
-            vec![
-                Line::from(vec![
-                    Span::styled(&kb.key, key_style),
-                    Span::raw(" → "),
-                    Span::styled(&kb.description, description_style),
-                ]),
-                Line::from(vec![
-                    Span::raw("  "),
-                    Span::styled(&kb.category, category_style),
-                ]),
-            ]
-        } else {
-            vec![Line::from(vec![
-                Span::styled(&kb.key, key_style),
+            let key_part = format!("{} → ", kb.key);
+            let key_len = key_part.len() as u16;
+            let description_width = available_width.saturating_sub(key_len + 4); // 4 for padding/borders
+
+            let description_text = if is_selected {
+                // For selected items, allow wrapping by splitting into multiple lines
+                self.wrap_text(&kb.description, description_width)
+            } else {
+                // For unselected items, truncate with ellipsis
+                vec![self.truncate_text(&kb.description, description_width)]
+            };
+
+            let mut lines = vec![Line::from(vec![
+                Span::styled(kb.key.clone(), key_style),
                 Span::raw(" → "),
-                Span::styled(&kb.action, description_style),
-            ])]
+                Span::styled(description_text[0].clone(), description_style),
+            ])];
+
+            // Add additional lines for wrapped text (only for selected items)
+            for line in description_text.iter().skip(1) {
+                lines.push(Line::from(vec![
+                    Span::raw(" ".repeat(key_len as usize)),
+                    Span::styled(line.clone(), description_style),
+                ]));
+            }
+
+            lines
+        } else {
+            let key_part = format!("{} → ", kb.key);
+            let key_len = key_part.len() as u16;
+            let action_width = available_width.saturating_sub(key_len + 4);
+
+            let action_text = if is_selected {
+                self.wrap_text(&kb.action, action_width)
+            } else {
+                vec![self.truncate_text(&kb.action, action_width)]
+            };
+
+            let mut lines = vec![Line::from(vec![
+                Span::styled(kb.key.clone(), key_style),
+                Span::raw(" → "),
+                Span::styled(action_text[0].clone(), description_style),
+            ])];
+
+            for line in action_text.iter().skip(1) {
+                lines.push(Line::from(vec![
+                    Span::raw(" ".repeat(key_len as usize)),
+                    Span::styled(line.clone(), description_style),
+                ]));
+            }
+
+            lines
         };
 
         ListItem::new(content)
+    }
+
+    fn truncate_text(&self, text: &str, max_width: u16) -> String {
+        if max_width <= 3 {
+            return "...".to_string();
+        }
+
+        if text.len() <= max_width as usize {
+            text.to_string()
+        } else {
+            let truncate_pos = (max_width as usize).saturating_sub(3);
+            format!("{}...", &text[..truncate_pos])
+        }
+    }
+
+    fn wrap_text(&self, text: &str, max_width: u16) -> Vec<String> {
+        if max_width == 0 {
+            return vec![text.to_string()];
+        }
+
+        let mut lines = Vec::new();
+        let mut current_line = String::new();
+
+        for word in text.split_whitespace() {
+            let word_len = word.len();
+            let current_len = current_line.len();
+
+            // If adding this word would exceed the width
+            if current_len + word_len + 1 > max_width as usize && !current_line.is_empty() {
+                lines.push(current_line.trim().to_string());
+                current_line = word.to_string();
+            } else {
+                if !current_line.is_empty() {
+                    current_line.push(' ');
+                }
+                current_line.push_str(word);
+            }
+        }
+
+        if !current_line.is_empty() {
+            lines.push(current_line.trim().to_string());
+        }
+
+        if lines.is_empty() {
+            vec![text.to_string()]
+        } else {
+            lines
+        }
     }
 
     fn render_help(&self, f: &mut Frame) {
