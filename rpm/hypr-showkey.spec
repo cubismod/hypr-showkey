@@ -49,5 +49,5 @@ fi
 %{_bindir}/hypr-showkey
 
 %changelog
-* Aug 11 2025 Ryan Wallace <git@hexa.mozmail.com>
+* Mon Aug 11 2025 Ryan Wallace <git@hexa.mozmail.com>
 - initial version
