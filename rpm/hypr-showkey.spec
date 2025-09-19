@@ -6,6 +6,10 @@ Summary:        A TUI application to display and search Hyprland keybindings
 License:        Apache-2.0
 URL:            https://github.com/cubismod/hypr-showkey
 Source0:        %{name}-%{version}.tar.gz
+# If you use COPR or another builder that fetches sources remotely, you can
+# replace the local tarball with a GitHub archive URL (uncomment and adjust
+# if you tag releases):
+# Source0:        https://github.com/cubismod/hypr-showkey/archive/refs/tags/v%{version}.tar.gz
 
 BuildRequires:  cargo
 BuildRequires:  rust
@@ -45,3 +49,5 @@ fi
 %{_bindir}/hypr-showkey
 
 %changelog
+* Aug 11 2025 Ryan Wallace <git@hexa.mozmail.com>
+- initial version
