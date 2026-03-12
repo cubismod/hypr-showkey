@@ -8,7 +8,7 @@ license = "Apache-2.0"
 repository = "https://github.com/cubismod/hypr-showkey"
 
 [dependencies]
-ratatui = "0.29"
+ratatui = "0.30"
 crossterm = "0.29"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
