@@ -18,7 +18,7 @@ jobs:
         rust: [stable, beta]
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@master
@@ -27,7 +27,7 @@ jobs:
         components: rustfmt, clippy
 
     - name: Cache Cargo registry
-      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
       with:
         path: |
           ~/.cargo/registry
@@ -64,7 +64,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
@@ -76,7 +76,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y musl-tools
 
     - name: Cache Cargo registry
-      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
       with:
         path: |
           ~/.cargo/registry
@@ -100,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
